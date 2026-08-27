@@ -4,35 +4,47 @@ import { createClient } from "@supabase/supabase-js";
 
 // ---------------------------------------------
 // Conexión a Supabase (backend real de usuarios/base de datos)
-// Pegá acá los dos valores de tu proyecto: Settings → API en supabase.com
 // ---------------------------------------------
 const SUPABASE_URL = "https://qalqhncqkifgdsirdygw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_4tvmuLPTuU82r0r-OJGLpw_zaxf4RYm";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Video de muestra (licencia libre) usado solo para probar el reproductor.
-// Cuando haya contenido real, esta URL se reemplaza por la del video correspondiente.
+// Video de muestra (licencia libre) usado cuando un título todavía no tiene video_url propio.
 const SAMPLE_VIDEO = "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
-// ---------------------------------------------
-// Datos de ejemplo (demo) — reemplazar por datos reales más adelante
-// ---------------------------------------------
-const TITLES = [
-  { id: 1, title: "El Muelle Vacío", year: 2023, duration: "1h 48m", rating: "13+", genre: "Drama", desc: "Un pescador retirado vuelve a su pueblo natal para enfrentar un secreto que dividió a su familia durante décadas.", color: "from-[#2b3a55] to-[#0d1220]", tag: "Cine de autor" },
-  { id: 2, title: "Zumbido", year: 2022, duration: "6 episodios", rating: "16+", genre: "Thriller", desc: "En una ciudad donde el silencio se volvió ley, una técnica de sonido descubre una frecuencia que nadie debería escuchar.", color: "from-[#4a2545] to-[#150a17]", tag: "Series" },
-  { id: 3, title: "Latitud Cero", year: 2021, duration: "2h 05m", rating: "ATP", genre: "Documental", desc: "Un recorrido por las comunidades que viven exactamente sobre la línea del ecuador, entre tradición y cambio climático.", color: "from-[#1f4d3d] to-[#0a1a14]", tag: "Documentales" },
-  { id: 4, title: "Casa de Vidrio", year: 2024, duration: "1h 32m", rating: "13+", genre: "Suspenso", desc: "Una arquitecta descubre que la casa que diseñó para otros repite, habitación por habitación, los planos de su infancia.", color: "from-[#5a3a1f] to-[#1a0f08]", tag: "Estrenos" },
-  { id: 5, title: "Ruido Blanco Sur", year: 2020, duration: "4 episodios", rating: "16+", genre: "Drama", desc: "Cuatro operadores de una radio de altamar transmiten sus últimas señales antes de que la estación sea desmantelada.", color: "from-[#2e2e52] to-[#0c0c1a]", tag: "Series" },
-  { id: 6, title: "El Año de las Hormigas", year: 2019, duration: "1h 56m", rating: "ATP", genre: "Drama", desc: "Una niña organiza a los vecinos de su edificio para resolver un misterio que los adultos prefieren ignorar.", color: "from-[#3a4a1f] to-[#0f150a]", tag: "Cine de autor" },
-  { id: 7, title: "Frecuencia Nocturna", year: 2023, duration: "1h 41m", rating: "13+", genre: "Misterio", desc: "Un locutor de radio nocturno empieza a recibir llamadas de números que dejaron de existir hace años.", color: "from-[#502a2a] to-[#160c0c]", tag: "Destacados" },
-  { id: 8, title: "Los Últimos Faros", year: 2018, duration: "3 episodios", rating: "ATP", genre: "Documental", desc: "Los guardianes de los últimos faros habitados del continente cuentan cómo es vivir en los bordes del mapa.", color: "from-[#1f3a4a] to-[#08141a]", tag: "Documentales" },
-  { id: 9, title: "Sombra de Verano", year: 2022, duration: "1h 39m", rating: "13+", genre: "Romance", desc: "Dos desconocidos comparten el mismo departamento en turnos opuestos durante un verano de cortes de luz.", color: "from-[#4a1f3a] to-[#150814]", tag: "Estrenos" },
-  { id: 10, title: "Código Ausente", year: 2021, duration: "5 episodios", rating: "16+", genre: "Thriller", desc: "Una programadora encuentra fragmentos de un software que nadie en la empresa admite haber escrito.", color: "from-[#1f4a4a] to-[#081515]", tag: "Series" },
-  { id: 11, title: "Tierra de Nadie Fértil", year: 2020, duration: "2h 12m", rating: "13+", genre: "Drama", desc: "Una familia de agricultores disputa la última cosecha de una tierra que será expropiada en treinta días.", color: "from-[#4a3a1f] to-[#150f08]", tag: "Cine de autor" },
-  { id: 12, title: "Insomnio Colectivo", year: 2024, duration: "1h 28m", rating: "16+", genre: "Suspenso", desc: "En un pueblo donde nadie logra dormir hace once noches, alguien empieza a confesar cosas que no debería saber.", color: "from-[#2a2a2a] to-[#0a0a0a]", tag: "Destacados" },
+// Paleta de colores de relleno para títulos sin imagen_url (se asignan por turno).
+const PALETTE = [
+  "from-[#2b3a55] to-[#0d1220]",
+  "from-[#4a2545] to-[#150a17]",
+  "from-[#1f4d3d] to-[#0a1a14]",
+  "from-[#5a3a1f] to-[#1a0f08]",
+  "from-[#2e2e52] to-[#0c0c1a]",
+  "from-[#3a4a1f] to-[#0f150a]",
+  "from-[#502a2a] to-[#160c0c]",
+  "from-[#1f3a4a] to-[#08141a]",
+  "from-[#4a1f3a] to-[#150814]",
+  "from-[#1f4a4a] to-[#081515]",
+  "from-[#4a3a1f] to-[#150f08]",
+  "from-[#2a2a2a] to-[#0a0a0a]",
 ];
 
-const ROWS = ["Destacados", "Estrenos", "Series", "Cine de autor", "Documentales"];
+// Convierte una fila de la tabla "titulos" de Supabase al formato que usa la interfaz.
+function mapTitulo(row, index) {
+  return {
+    id: row.id,
+    title: row.nombre,
+    desc: row.descripcion || "",
+    genre: row.categoria || "Sin categoría",
+    tag: row.destacado ? "Destacados" : (row.categoria || "Sin categoría"),
+    color: PALETTE[index % PALETTE.length],
+    imagen_url: row.imagen_url || null,
+    video_url: row.video_url || null,
+    destacado: !!row.destacado,
+    year: row.year || null,
+    duration: row.duration || null,
+    rating: row.rating || null,
+  };
+}
 
 // ---------------------------------------------
 // Componentes
@@ -43,6 +55,7 @@ function Poster({ item, onOpen }) {
     <button
       onClick={() => onOpen(item)}
       className={`group relative flex-shrink-0 w-[168px] sm:w-[200px] h-[240px] sm:h-[280px] rounded-md overflow-hidden bg-gradient-to-br ${item.color} focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e3b23c] transition-transform duration-300 ease-out hover:scale-[1.04] hover:z-10`}
+      style={item.imagen_url ? { backgroundImage: `url(${item.imagen_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
     >
       <div className="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/70 via-black/10 to-transparent">
         <span className="text-[10px] uppercase tracking-[0.15em] text-[#e3b23c]/80 mb-1">{item.genre}</span>
@@ -101,7 +114,10 @@ function DetailModal({ item, onClose, onPlay }) {
         className={`relative w-full max-w-lg rounded-lg overflow-hidden bg-[#12141c] border border-white/10`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`h-56 bg-gradient-to-br ${item.color} relative flex items-end p-6`}>
+        <div
+          className={`h-56 bg-gradient-to-br ${item.color} relative flex items-end p-6`}
+          style={item.imagen_url ? { backgroundImage: `url(${item.imagen_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+        >
           <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center">
             <X size={16} className="text-[#f3ead9]" />
           </button>
@@ -109,11 +125,9 @@ function DetailModal({ item, onClose, onPlay }) {
         </div>
         <div className="p-6">
           <div className="flex items-center gap-3 text-sm text-[#f3ead9]/60 mb-4">
-            <span>{item.year}</span>
-            <span>·</span>
-            <span>{item.duration}</span>
-            <span>·</span>
-            <span className="border border-[#f3ead9]/30 px-1.5 py-0.5 rounded text-xs">{item.rating}</span>
+            {item.year && <span>{item.year}</span>}
+            {item.duration && <><span>·</span><span>{item.duration}</span></>}
+            {item.rating && <><span>·</span><span className="border border-[#f3ead9]/30 px-1.5 py-0.5 rounded text-xs">{item.rating}</span></>}
           </div>
           <p className="text-[#f3ead9]/85 leading-relaxed mb-6">{item.desc}</p>
           <div className="flex gap-3">
@@ -276,7 +290,7 @@ function Player({ item, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black" onMouseMove={wake}>
-      <video ref={videoRef} src={SAMPLE_VIDEO} muted={muted} className="w-full h-full object-contain" onClick={togglePlay} />
+      <video ref={videoRef} src={item.video_url || SAMPLE_VIDEO} muted={muted} className="w-full h-full object-contain" onClick={togglePlay} />
       <div className={`absolute inset-0 flex flex-col justify-between transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"}`}>
         <div className="bg-gradient-to-b from-black/80 to-transparent p-4 sm:p-6 flex items-center gap-4">
           <button onClick={onClose} className="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center">
@@ -316,7 +330,24 @@ export default function App() {
   const [showSearch, setShowSearch] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const featured = TITLES[6];
+
+  // Catálogo cargado desde Supabase (tabla "titulos")
+  const [titles, setTitles] = useState([]);
+  const [loadingTitles, setLoadingTitles] = useState(true);
+
+  useEffect(() => {
+    const cargarTitulos = async () => {
+      const { data, error } = await supabase
+        .from("titulos")
+        .select("*")
+        .order("creado_en", { ascending: false });
+      if (!error && data) {
+        setTitles(data.map(mapTitulo));
+      }
+      setLoadingTitles(false);
+    };
+    cargarTitulos();
+  }, []);
 
   // Al cargar, revisa si ya hay una sesión activa (persistencia real)
   useEffect(() => {
@@ -349,8 +380,16 @@ export default function App() {
   }, []);
 
   const filtered = query
-    ? TITLES.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
+    ? titles.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
     : null;
+
+  // Categorías presentes en el catálogo actual (Destacados primero si hay alguno)
+  const rows = [
+    ...(titles.some((t) => t.destacado) ? ["Destacados"] : []),
+    ...Array.from(new Set(titles.filter((t) => !t.destacado).map((t) => t.genre))),
+  ];
+
+  const featured = titles.find((t) => t.destacado) || titles[0] || null;
 
   if (checkingSession) {
     return <div className="min-h-screen bg-[#0b0d14]" />;
@@ -375,9 +414,6 @@ export default function App() {
             <span className="font-serif text-xl tracking-wide text-[#e3b23c]">NOCTURNO</span>
             <nav className="hidden md:flex gap-6 text-sm text-[#f3ead9]/70">
               <a className="hover:text-[#f3ead9] transition-colors" href="#">Inicio</a>
-              <a className="hover:text-[#f3ead9] transition-colors" href="#">Series</a>
-              <a className="hover:text-[#f3ead9] transition-colors" href="#">Cine de autor</a>
-              <a className="hover:text-[#f3ead9] transition-colors" href="#">Documentales</a>
             </nav>
           </div>
           <div className="flex items-center gap-4">
@@ -422,10 +458,19 @@ export default function App() {
             )}
           </div>
         </div>
+      ) : loadingTitles ? (
+        <div className="pt-28 px-4 sm:px-10 pb-16 text-[#f3ead9]/60">Cargando catálogo...</div>
+      ) : !featured ? (
+        <div className="pt-28 px-4 sm:px-10 pb-16 text-[#f3ead9]/60">
+          Todavía no hay títulos cargados. Agregalos desde la tabla "titulos" en Supabase.
+        </div>
       ) : (
         <>
           {/* Hero */}
-          <div className={`relative h-[62vh] sm:h-[78vh] flex items-end bg-gradient-to-br ${featured.color}`}>
+          <div
+            className={`relative h-[62vh] sm:h-[78vh] flex items-end bg-gradient-to-br ${featured.color}`}
+            style={featured.imagen_url ? { backgroundImage: `url(${featured.imagen_url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+          >
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b0d14] via-[#0b0d14]/30 to-transparent" />
             <div className="relative z-10 px-4 sm:px-10 pb-12 sm:pb-16 max-w-xl">
               <span className="text-xs uppercase tracking-[0.2em] text-[#e3b23c] mb-3 block">{featured.tag}</span>
@@ -444,15 +489,20 @@ export default function App() {
 
           {/* Filas por categoría */}
           <div className="pt-8 pb-16">
-            {ROWS.map((row) => (
-              <Shelf key={row} label={row} items={TITLES.filter((t) => t.tag === row)} onOpen={setSelected} />
+            {rows.map((row) => (
+              <Shelf
+                key={row}
+                label={row}
+                items={row === "Destacados" ? titles.filter((t) => t.destacado) : titles.filter((t) => !t.destacado && t.genre === row)}
+                onOpen={setSelected}
+              />
             ))}
           </div>
         </>
       )}
 
       <footer className="px-4 sm:px-10 py-8 border-t border-white/5 text-[#f3ead9]/40 text-xs">
-        Nocturno — demo de catálogo. Contenido y datos de ejemplo.
+        Nocturno
       </footer>
 
       <DetailModal item={selected} onClose={() => setSelected(null)} onPlay={(it) => { setSelected(null); setPlayingItem(it); }} />
@@ -460,3 +510,4 @@ export default function App() {
     </div>
   );
 }
+
