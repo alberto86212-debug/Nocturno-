@@ -235,6 +235,32 @@ function LoginScreen({ onLogin }) {
   );
 }
 
+// Bunny Stream entrega una URL de reproductor embebido (iframe), no un archivo directo.
+// Esta función detecta ese caso para mostrar el reproductor correcto.
+function esVideoEmbebido(url) {
+  return !!url && url.includes("mediadelivery.net");
+}
+
+function PlayerEmbebido({ item, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black">
+      <div className="absolute top-0 inset-x-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-4 sm:p-6 flex items-center gap-4">
+        <button onClick={onClose} className="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center">
+          <ArrowLeft size={18} className="text-[#f3ead9]" />
+        </button>
+        <span className="font-serif text-lg text-[#f3ead9]">{item.title}</span>
+      </div>
+      <iframe
+        src={`${item.video_url}?autoplay=true`}
+        loading="lazy"
+        className="w-full h-full border-0"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+        allowFullScreen
+      />
+    </div>
+  );
+}
+
 function Player({ item, onClose }) {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(true);
@@ -506,8 +532,11 @@ export default function App() {
       </footer>
 
       <DetailModal item={selected} onClose={() => setSelected(null)} onPlay={(it) => { setSelected(null); setPlayingItem(it); }} />
-      {playingItem && <Player item={playingItem} onClose={() => setPlayingItem(null)} />}
+      {playingItem && (
+        esVideoEmbebido(playingItem.video_url)
+          ? <PlayerEmbebido item={playingItem} onClose={() => setPlayingItem(null)} />
+          : <Player item={playingItem} onClose={() => setPlayingItem(null)} />
+      )}
     </div>
   );
 }
-
